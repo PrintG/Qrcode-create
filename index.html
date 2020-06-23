@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="Author" content="print">
+		<meta name="Keywords" content="标题">
+		<meta name="Description" content="描述">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,minimal-ui">  <!-- 手机端 -->
+		<link rel="stylesheet" href="css/colpick.css">
+		<link rel="stylesheet" href="css/reset.css">  <!-- 样式初始化 -->
+		<link rel="stylesheet" href="css/index.css">  <!-- 当前页面css -->
+		<!--[if lt IE 9]>
+			<script src="js/html5shiv.js"></script>
+			<div style="position:relative;z-index:99;width:100%;height:50px;background:#ffffe9;color:#1e5494;border-bottom:1px solid #e6e6c6;text-align:center;line-height:50px;font-size:12px;">您使用的浏览器版本过低，可能会影响到您浏览本网页，建议您升级您的浏览器。</div>
+		<![endif]-->
+		<title>二维码生成</title>
+		<style>
+			.createQrCode{
+				width: 50%;
+				min-width: 400px;
+				margin: 50px auto;
+			}
+			.qrCodeControls>div{
+				float: left;
+			}
+			.qrCodeInput{
+				width: 75%;
+			}
+			.qrCodeInput input{
+				width: 100%;
+				height: 35px;
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
+			}
+			.qrCodeBtn{
+				width: 25%;
+				height: 35px;
+				border: 1px solid #cccccc;
+				border-left: none;
+				text-align: center;
+				line-height: 35px;
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
+				cursor: pointer;
+				-webkit-user-select: none;
+				user-select: none;
+			}
+			.qrCodeShowWrap{
+				width: 100%;
+				padding-top: 20px;
+			}
+			.qrCodeShowTips{
+				width: 100%;
+				color: #777;
+				text-align: center;
+			}
+			#qrCodeShow{
+				width: 150px;
+				height: 150px;
+				margin: auto;
+			}
+			.colorPicker-btn{
+				width: 200px;
+				margin: 30px auto;
+				border: 1px solid #cccccc;
+				color: #ffffff;
+				font-size: 14px;
+				text-align: center;
+				line-height: 35px;
+				cursor: pointer;
+				background-color: #000000;
+			}
+			.colorPicker-container{
+			    width: 206px;
+    			margin: -20px auto 10px;
+
+			}
+		</style>
+	</head>
+	<body>
+		<div class="createQrCode">
+			<div class="colorPicker">
+				<div class="colorPicker-btn">调整二维码颜色</div>
+				<div class="colorPicker-container"></div>
+			</div>
+			<div class="qrCodeControls clearfix">
+				<div class="qrCodeInput">
+					<input id="qrCodeText" type="text">
+				</div>
+				<div class="qrCodeBtn">
+					创建二维码
+				</div>
+			</div>
+			<div class="qrCodeShowWrap">
+				<p class="qrCodeShowTips">生成二维码后会在该处展示！</p>
+				<div id="qrCodeShow">
+					
+				</div>
+			</div>
+		</div>
+		
+		<script src="js/jquery.min.js"></script>
+		<script src="js/qrcode.min.js"></script>
+		<script src="js/colpick.js"></script>
+		<script>
+			(function(){
+				//获取相关元素
+				var $qrCodeText = $("#qrCodeText"),
+					$qrCodeBtn = $(".qrCodeBtn"),
+					$qrCodeShowTips = $(".qrCodeShowTips"),
+					$qrCodeShow = $("#qrCodeShow");
+
+				var qrcode,
+					qrcodeColor = "#000000";
+
+				//选择二维码颜色
+				$('.colorPicker-container').colpick({
+				    flat: true,
+				    layout: 'hex',
+				    submit: 0,
+				    onChange: function(hsb,color){
+				    	if(qrcode){
+				    		qrcode._htOption.colorDark = "#"+color;
+				    	}else{
+				    		qrcodeColor = "#"+color;
+				    	}
+				    	
+				    }
+				});
+
+				//点击按钮生成二维码
+				$qrCodeBtn.click(function(){
+					var qrText = $qrCodeText.val();
+					if(/^\s*$/.test(qrText)){
+						$qrCodeShowTips.text("请输入要生成的二维码内容");
+						return;
+					}else{
+						$qrCodeShowTips.text("正在生成中...");
+						if(qrcode){
+							qrcode.clear();
+							qrcode.makeCode(qrText);
+						}else{
+							initQrCode(qrText);
+						}
+					}
+				});
+
+
+				function initQrCode(text){
+					$qrCodeShowTips.addClass("c-hide");
+					qrcode = new QRCode($qrCodeShow[0], {
+					  text: text,
+					  width: 150,
+					  height: 150,
+					  colorDark : qrcodeColor,
+					  colorLight : "#ffffff",
+					  correctLevel : QRCode.CorrectLevel.H
+					});
+				}
+
+			})();
+		</script>
+	</body>
+</html>
